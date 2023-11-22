@@ -23,7 +23,7 @@ class notesactivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var addsBtn: FloatingActionButton
     private lateinit var recv: RecyclerView
-    private lateinit var userList: ArrayList<UserData>
+    private val userList= ArrayList<UserData>()
     private lateinit var userAdapter: UserAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +33,7 @@ class notesactivity : AppCompatActivity() {
         supportActionBar?.title = "All Subjects"
 
 
-        userList= ArrayList()
+        userList
         addsBtn=findViewById(R.id.createnotefab)
         recv=findViewById(R.id.recyclerview)
         userAdapter=UserAdapter(this,userList)

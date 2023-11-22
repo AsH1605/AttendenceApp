@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.notes.R
 import com.example.notes.model.UserData
 
-class UserAdapter(val c:Context,val userList: ArrayList<UserData>):RecyclerView.Adapter<UserAdapter.userViewHolder>() {
+class UserAdapter(val c:Context, private val userList: ArrayList<UserData>):RecyclerView.Adapter<UserAdapter.userViewHolder>() {
 
     inner class userViewHolder(val v: View):RecyclerView.ViewHolder(v){
-        val subName=v.findViewById<TextView>(R.id.mtitle)
-        val teacherName=v.findViewById<TextView>(R.id.mSubtitle)
+        val subName: TextView? =v.findViewById<TextView>(R.id.mtitle)
+        val teacherName: TextView? =v.findViewById<TextView>(R.id.mSubtitle)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): userViewHolder {
@@ -28,7 +28,7 @@ class UserAdapter(val c:Context,val userList: ArrayList<UserData>):RecyclerView.
 
     override fun onBindViewHolder(holder: userViewHolder, position: Int) {
         val newList=userList[position]
-        holder.subName.text=newList.subName
-        holder.teacherName.text=newList.teacherName
+        holder.subName?.text=newList.subName
+        holder.teacherName?.text=newList.teacherName
     }
 }
