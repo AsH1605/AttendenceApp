@@ -16,6 +16,9 @@ import com.example.notes.model.UserData
 import com.example.notes.view.UserAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 
 class notesactivity : AppCompatActivity() {
 
@@ -25,20 +28,22 @@ class notesactivity : AppCompatActivity() {
     private lateinit var recv: RecyclerView
     private val userList= ArrayList<UserData>()
     private lateinit var userAdapter: UserAdapter
+    private lateinit var firebaseUser: FirebaseUser
+    private lateinit var firebaseFirestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notesactivity)
 
         supportActionBar?.title = "All Subjects"
-
-
-        userList
         addsBtn=findViewById(R.id.createnotefab)
         recv=findViewById(R.id.recyclerview)
         userAdapter=UserAdapter(this,userList)
         recv.layoutManager= LinearLayoutManager(this)
         recv.adapter=userAdapter
+        firebaseAuth=FirebaseAuth.getInstance()
+        firebaseFirestore=FirebaseFirestore.getInstance()
+        firebaseUser= FirebaseAuth.getInstance().currentUser!!
         addsBtn.setOnClickListener { addInfo()
             Log.d("TAG", "onCreate: ${userList.joinToString { it.toString().plus(", ") }}")}
 
@@ -75,9 +80,23 @@ class notesactivity : AppCompatActivity() {
                 dialog,_->
             val subNames=subName.text.toString()
             val tNames=teacherName.text.toString()
+
             userList.add(UserData("Subject Name: $subNames", "Teacher's Name: $tNames"))
             userAdapter.notifyDataSetChanged()
-            Toast.makeText(this,"Adding information", Toast.LENGTH_SHORT).show()
+            val documentReference = FirebaseFirestore.getInstance()
+                .collection("Subjects")
+                .document(firebaseUser.uid)
+                .collection("mySubjects")
+                .document()
+            val note = mutableMapOf(
+                "Subject" to subNames,
+                "Teacher's Name" to tNames
+            )
+
+            documentReference.set(note).addOnSuccessListener{
+                Toast.makeText(this,"Subject Added Successful", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, notesactivity::class.java))
+            }
             dialog.dismiss()
         }
         addDialog.setNegativeButton("Cancel"){
