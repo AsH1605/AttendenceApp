@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -22,7 +23,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class notesactivity : AppCompatActivity() {
 
-    lateinit var mcreatenotesfab:FloatingActionButton
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var addsBtn: FloatingActionButton
     private lateinit var recv: RecyclerView
@@ -38,7 +38,7 @@ class notesactivity : AppCompatActivity() {
         supportActionBar?.title = "All Subjects"
         addsBtn=findViewById(R.id.createnotefab)
         recv=findViewById(R.id.recyclerview)
-        userAdapter=UserAdapter(this,userList)
+        userAdapter=UserAdapter(userList)
         recv.layoutManager= LinearLayoutManager(this)
         recv.adapter=userAdapter
         firebaseAuth=FirebaseAuth.getInstance()
@@ -46,7 +46,7 @@ class notesactivity : AppCompatActivity() {
         firebaseUser= FirebaseAuth.getInstance().currentUser!!
         addsBtn.setOnClickListener { addInfo()
             Log.d("TAG", "onCreate: ${userList.joinToString { it.toString().plus(", ") }}")}
-
+         getData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -81,19 +81,17 @@ class notesactivity : AppCompatActivity() {
             val subNames=subName.text.toString()
             val tNames=teacherName.text.toString()
 
-            userList.add(UserData("Subject Name: $subNames", "Teacher's Name: $tNames"))
-            userAdapter.notifyDataSetChanged()
+//            userList.add(UserData("Subject Name: $subNames", "Teacher's Name: $tNames"))
+//            userAdapter.notifyDataSetChanged()
             val documentReference = FirebaseFirestore.getInstance()
                 .collection("Subjects")
                 .document(firebaseUser.uid)
                 .collection("mySubjects")
                 .document()
-            val note = mutableMapOf(
-                "Subject" to subNames,
-                "Teacher's Name" to tNames
-            )
 
-            documentReference.set(note).addOnSuccessListener{
+            val userdata=UserData(subNames,tNames)
+
+            documentReference.set(userdata).addOnSuccessListener{
                 Toast.makeText(this,"Subject Added Successful", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, notesactivity::class.java))
             }
@@ -106,5 +104,32 @@ class notesactivity : AppCompatActivity() {
         }
         addDialog.create()
         addDialog.show()
+    }
+
+    private fun getData(){
+        recv.visibility= View.GONE
+
+        val documentReference = FirebaseFirestore.getInstance()
+            .collection("Subjects")
+            .document(firebaseUser.uid)
+            .collection("mySubjects")
+        documentReference.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.e("TAG", "Error fetching data", error)
+                Toast.makeText(this, "Error fetching Data", Toast.LENGTH_SHORT).show()
+            }
+            userList.clear()
+            if(snapshot!=null){
+                for(document in snapshot.documents){
+                    val sub=document?.toObject(UserData::class.java)
+                    Log.d("TAG", "getData: $document")
+                    if(sub!=null){
+                        userList.add(sub)
+                    }
+                }
+                userAdapter.notifyDataSetChanged()
+                recv.visibility= View.VISIBLE
+            }
+        }
     }
 }
