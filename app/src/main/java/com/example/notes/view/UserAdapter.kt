@@ -11,6 +11,8 @@ import com.example.notes.model.UserData
 
 class UserAdapter(private val userList: ArrayList<UserData>):RecyclerView.Adapter<UserAdapter.userViewHolder>() {
 
+    var onItemClick:((UserData)->Unit)?=null
+
     inner class userViewHolder(private val v: View):RecyclerView.ViewHolder(v){
         val subName=v.findViewById<TextView>(R.id.mtitle)
         val teacherName =v.findViewById<TextView>(R.id.mSubtitle)
@@ -30,5 +32,9 @@ class UserAdapter(private val userList: ArrayList<UserData>):RecyclerView.Adapte
         val newList=userList[position]
         holder.subName?.text=newList.subName
         holder.teacherName?.text=newList.teacherName
+
+        holder.itemView.setOnClickListener {
+            onItemClick?.invoke(UserData())
+        }
     }
 }

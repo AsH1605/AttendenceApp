@@ -46,7 +46,11 @@ class notesactivity : AppCompatActivity() {
         firebaseUser= FirebaseAuth.getInstance().currentUser!!
         addsBtn.setOnClickListener { addInfo()
             Log.d("TAG", "onCreate: ${userList.joinToString { it.toString().plus(", ") }}")}
-         getData()
+        getData()
+        userAdapter.onItemClick={
+            Toast.makeText(this,"Update sub info",Toast.LENGTH_SHORT).show()
+            updateinfo()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -132,4 +136,24 @@ class notesactivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun updateinfo() {
+        val inflater= LayoutInflater.from(this)
+        val v=inflater.inflate(R.layout.sub_update,null)
+        val addDialog= AlertDialog.Builder(this)
+        addDialog.setView(v)
+        addDialog.setPositiveButton("Ok"){
+                dialog,_->
+            Toast.makeText(this,"Closing",Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+        addDialog.setNegativeButton("Cancel"){
+                dialog,_->
+            dialog.dismiss()
+            Toast.makeText(this,"Cancel", Toast.LENGTH_SHORT).show()
+        }
+        addDialog.create()
+        addDialog.show()
+    }
+
 }
