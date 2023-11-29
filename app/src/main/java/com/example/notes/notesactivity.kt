@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 class notesactivity : AppCompatActivity() {
@@ -26,7 +28,7 @@ class notesactivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var addsBtn: FloatingActionButton
     private lateinit var recv: RecyclerView
-    private val userList= ArrayList<UserData>()
+    private val userList = ArrayList<UserData>()
     private lateinit var userAdapter: UserAdapter
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var firebaseFirestore: FirebaseFirestore
@@ -36,21 +38,27 @@ class notesactivity : AppCompatActivity() {
         setContentView(R.layout.activity_notesactivity)
 
         supportActionBar?.title = "All Subjects"
-        addsBtn=findViewById(R.id.createnotefab)
-        recv=findViewById(R.id.recyclerview)
-        userAdapter=UserAdapter(userList)
-        recv.layoutManager= LinearLayoutManager(this)
-        recv.adapter=userAdapter
-        firebaseAuth=FirebaseAuth.getInstance()
-        firebaseFirestore=FirebaseFirestore.getInstance()
-        firebaseUser= FirebaseAuth.getInstance().currentUser!!
-        addsBtn.setOnClickListener { addInfo()
-            Log.d("TAG", "onCreate: ${userList.joinToString { it.toString().plus(", ") }}")}
-        getData()
-        userAdapter.onItemClick={
-            Toast.makeText(this,"Update sub info",Toast.LENGTH_SHORT).show()
-            updateinfo()
+        addsBtn = findViewById(R.id.createnotefab)
+        recv = findViewById(R.id.recyclerview)
+        userAdapter = UserAdapter(userList)
+        recv.layoutManager = LinearLayoutManager(this)
+        recv.adapter = userAdapter
+        firebaseAuth = FirebaseAuth.getInstance()
+        firebaseFirestore = FirebaseFirestore.getInstance()
+        firebaseUser = FirebaseAuth.getInstance().currentUser!!
+        addsBtn.setOnClickListener {
+            addInfo()
+            Log.d("TAG", "onCreate: ${userList.joinToString { it.toString().plus(", ") }}")
         }
+        getData()
+        userAdapter.setOnItemClickListener(object : UserAdapter.OnItemClickListener {
+            override fun onClick(position: Int) {
+                val clickedItem = userList[position]
+                Log.d("Click Value", clickedItem.subName)
+                updateinfo(clickedItem.classAttended,clickedItem.totalClasses)
+            }
+        })
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -65,53 +73,48 @@ class notesactivity : AppCompatActivity() {
             R.id.logout -> {
                 firebaseAuth.signOut()
                 finish()
-                startActivity(Intent(this,MainActivity::class.java))
+                startActivity(Intent(this, MainActivity::class.java))
                 true
             }
+
             else -> false
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun addInfo() {
-        val inflater= LayoutInflater.from(this)
-        val v=inflater.inflate(R.layout.add_item,null)
-        val subName=v.findViewById<EditText>(R.id.subName)
-        val teacherName=v.findViewById<EditText>(R.id.teacherName)
-        val addDialog= AlertDialog.Builder(this)
+        val inflater = LayoutInflater.from(this)
+        val v = inflater.inflate(R.layout.add_item, null)
+        val subName = v.findViewById<EditText>(R.id.subName)
+        val teacherName = v.findViewById<EditText>(R.id.teacherName)
+        val addDialog = AlertDialog.Builder(this)
         addDialog.setView(v)
-        addDialog.setPositiveButton("Ok"){
-                dialog,_->
-            val subNames=subName.text.toString()
-            val tNames=teacherName.text.toString()
-
-//            userList.add(UserData("Subject Name: $subNames", "Teacher's Name: $tNames"))
-//            userAdapter.notifyDataSetChanged()
+        addDialog.setPositiveButton("Ok") { dialog, _ ->
+            val subNames = subName.text.toString()
+            val tNames = teacherName.text.toString()
             val documentReference = FirebaseFirestore.getInstance()
                 .collection("Subjects")
                 .document(firebaseUser.uid)
                 .collection("mySubjects")
                 .document()
 
-            val userdata=UserData(subNames,tNames)
+            val userdata = UserData(subNames, tNames)
 
-            documentReference.set(userdata).addOnSuccessListener{
-                Toast.makeText(this,"Subject Added Successful", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, notesactivity::class.java))
+            documentReference.set(userdata).addOnSuccessListener {
+                Toast.makeText(this, "Subject Added Successful", Toast.LENGTH_SHORT).show()
             }
             dialog.dismiss()
         }
-        addDialog.setNegativeButton("Cancel"){
-                dialog,_->
+        addDialog.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
-            Toast.makeText(this,"Cancel", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Cancel", Toast.LENGTH_SHORT).show()
         }
         addDialog.create()
         addDialog.show()
     }
 
-    private fun getData(){
-        recv.visibility= View.GONE
+    private fun getData() {
+        recv.visibility = View.GONE
 
         val documentReference = FirebaseFirestore.getInstance()
             .collection("Subjects")
@@ -123,37 +126,45 @@ class notesactivity : AppCompatActivity() {
                 Toast.makeText(this, "Error fetching Data", Toast.LENGTH_SHORT).show()
             }
             userList.clear()
-            if(snapshot!=null){
-                for(document in snapshot.documents){
-                    val sub=document?.toObject(UserData::class.java)
+            if (snapshot != null) {
+                for (document in snapshot.documents) {
+                    val sub = document?.toObject(UserData::class.java)
                     Log.d("TAG", "getData: $document")
-                    if(sub!=null){
+                    if (sub != null) {
                         userList.add(sub)
                     }
                 }
                 userAdapter.notifyDataSetChanged()
-                recv.visibility= View.VISIBLE
+                recv.visibility = View.VISIBLE
             }
         }
     }
 
-    private fun updateinfo() {
-        val inflater= LayoutInflater.from(this)
-        val v=inflater.inflate(R.layout.sub_update,null)
-        val addDialog= AlertDialog.Builder(this)
+    private fun updateinfo(atten:Int, total: Int) {
+        val inflater = LayoutInflater.from(this)
+        val v = inflater.inflate(R.layout.sub_update, null)
+        val addDialog = AlertDialog.Builder(this)
         addDialog.setView(v)
-        addDialog.setPositiveButton("Ok"){
-                dialog,_->
-            Toast.makeText(this,"Closing",Toast.LENGTH_SHORT).show()
+        var daten = v.findViewById<TextView>(R.id.displayAttended)
+        var dtotal = v.findViewById<TextView>(R.id.displayTotal)
+
+        daten?.text= atten.toString()
+        dtotal?.text= total.toString()
+
+        addDialog.setPositiveButton("Ok") { dialog, _ ->
+            Toast.makeText(this, "Closing", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }
-        addDialog.setNegativeButton("Cancel"){
-                dialog,_->
+        addDialog.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
-            Toast.makeText(this,"Cancel", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Cancel", Toast.LENGTH_SHORT).show()
+        }
+        addDialog.setNeutralButton("Delete Subject") { dialog, _ ->
+            Toast.makeText(this, "Deleting", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
         }
         addDialog.create()
         addDialog.show()
     }
-
 }
+

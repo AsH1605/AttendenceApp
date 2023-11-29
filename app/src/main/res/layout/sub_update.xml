@@ -38,6 +38,7 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:id="@+id/btnSubAttended"
                 android:text="-"
                 android:textSize="18sp"
                 android:layout_weight="1"
@@ -47,7 +48,9 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:id="@+id/displayAttended"
                 android:text="Attended Class"
+                android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_weight="2"
@@ -56,6 +59,7 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:id="@+id/btnAddAttended"
                 android:text="+"
                 android:textSize="18sp"
                 android:layout_weight="1"
@@ -72,6 +76,7 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:id="@+id/btnSubTotal"
                 android:text="-"
                 android:textSize="18sp"
                 android:layout_weight="1"
@@ -81,7 +86,9 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:id="@+id/displayTotal"
                 android:text="Total Class"
+                android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_weight="2"
@@ -90,6 +97,7 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:id="@+id/btnAddTotal"
                 android:text="+"
                 android:textSize="18sp"
                 android:layout_weight="1"
