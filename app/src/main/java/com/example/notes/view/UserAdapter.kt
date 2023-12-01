@@ -17,6 +17,7 @@ class UserAdapter(private val userList: ArrayList<UserData>) : RecyclerView.Adap
         val teacherName = itemView.findViewById<TextView>(R.id.mSubtitle)
         val classAttended = itemView.findViewById<TextView>(R.id.attended)
         val totalClasses = itemView.findViewById<TextView>(R.id.total)
+        val percent=itemView.findViewById<TextView>(R.id.percentage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
@@ -43,6 +44,14 @@ class UserAdapter(private val userList: ArrayList<UserData>) : RecyclerView.Adap
         holder.teacherName.text = newUser.teacherName
         holder.classAttended.text = newUser.classAttended.toString()
         holder.totalClasses.text = newUser.totalClasses.toString()
+        val classAttended = newUser.classAttended
+        val totalClasses = newUser.totalClasses
+        val percentage = if (totalClasses != 0) {
+            (classAttended * 100 / totalClasses).toString() + "%"
+        } else {
+            0
+        }
+        holder.percent.text=percentage.toString()
 
         holder.itemView.setOnClickListener {
             onItemClickListener1?.onClick(position)

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -55,7 +56,7 @@ class notesactivity : AppCompatActivity() {
             override fun onClick(position: Int) {
                 val clickedItem = userList[position]
                 Log.d("Click Value", clickedItem.subName)
-                updateinfo(clickedItem.classAttended,clickedItem.totalClasses)
+                updateinfo(clickedItem.subName,clickedItem.classAttended,clickedItem.totalClasses)
             }
         })
 
@@ -140,7 +141,7 @@ class notesactivity : AppCompatActivity() {
         }
     }
 
-    private fun updateinfo(atten:Int, total: Int) {
+    private fun updateinfo(sub: String,atten:Int, total: Int) {
         val inflater = LayoutInflater.from(this)
         val v = inflater.inflate(R.layout.sub_update, null)
         val addDialog = AlertDialog.Builder(this)
@@ -151,7 +152,49 @@ class notesactivity : AppCompatActivity() {
         daten?.text= atten.toString()
         dtotal?.text= total.toString()
 
+        val btnAddAtten=v.findViewById<Button>(R.id.btnAddAttended)
+        val btnSubAtten=v.findViewById<Button>(R.id.btnSubAttended)
+        val btnAddTotal=v.findViewById<Button>(R.id.btnAddTotal)
+        val btnSubTotal=v.findViewById<Button>(R.id.btnSubTotal)
+
+        var attenNoPosi=0
+        var totalNoPosi=0
+        var attenNoNeg=0
+        var totalNoNeg=0
+
+        btnAddAtten.setOnClickListener {
+            attenNoPosi++
+            daten?.text= (atten+attenNoPosi-attenNoNeg).toString()
+        }
+        btnSubAtten.setOnClickListener {
+            attenNoNeg++
+            daten?.text= (atten+attenNoPosi-attenNoNeg).toString()
+        }
+        btnAddTotal.setOnClickListener {
+            totalNoPosi++
+            dtotal?.text= (total+totalNoPosi-totalNoNeg).toString()
+        }
+        btnSubTotal.setOnClickListener {
+            totalNoNeg++
+            dtotal?.text= (total+totalNoPosi-totalNoNeg).toString()
+        }
         addDialog.setPositiveButton("Ok") { dialog, _ ->
+            val documentReference = FirebaseFirestore.getInstance()
+                .collection("Subjects")
+                .document(firebaseUser.uid)
+                .collection("mySubjects")
+                .whereEqualTo("subName",sub)
+            documentReference.get().addOnSuccessListener { querySnapshot->
+                for(document in querySnapshot.documents){
+                    val updatedAtten=atten+attenNoPosi-attenNoNeg
+                    val updatedTotal=total+totalNoPosi-totalNoNeg
+                    document.reference.update("classAttended",updatedAtten)
+                    document.reference.update("totalClasses",updatedTotal)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Updated Successful", Toast.LENGTH_SHORT).show() }
+                        .addOnFailureListener { e -> Toast.makeText(this, "Error Updating", Toast.LENGTH_SHORT).show() }
+                }
+            }
             Toast.makeText(this, "Closing", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }
@@ -160,7 +203,17 @@ class notesactivity : AppCompatActivity() {
             Toast.makeText(this, "Cancel", Toast.LENGTH_SHORT).show()
         }
         addDialog.setNeutralButton("Delete Subject") { dialog, _ ->
-            Toast.makeText(this, "Deleting", Toast.LENGTH_SHORT).show()
+            FirebaseFirestore.getInstance()
+                .collection("Subjects")
+                .document(firebaseUser.uid)
+                .collection("mySubjects")
+                .whereEqualTo("subName",sub).get()
+                .addOnSuccessListener { querySnapshot->
+                    for(doc in querySnapshot.documents){
+                        doc.reference.delete()
+                    }
+                    Toast.makeText(this, "Subject Added Successful", Toast.LENGTH_SHORT).show() }
+                .addOnFailureListener { e -> Toast.makeText(this, "Error deleting Subject", Toast.LENGTH_SHORT).show() }
             dialog.dismiss()
         }
         addDialog.create()
