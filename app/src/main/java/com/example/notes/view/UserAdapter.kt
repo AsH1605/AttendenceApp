@@ -4,9 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notes.R
 import com.example.notes.model.UserData
+import java.util.Random
 
 class UserAdapter(private val userList: ArrayList<UserData>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
@@ -18,6 +20,7 @@ class UserAdapter(private val userList: ArrayList<UserData>) : RecyclerView.Adap
         val classAttended = itemView.findViewById<TextView>(R.id.attended)
         val totalClasses = itemView.findViewById<TextView>(R.id.total)
         val percent=itemView.findViewById<TextView>(R.id.percentage)
+        val cardView: CardView = itemView.findViewById(R.id.cardView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
@@ -56,5 +59,21 @@ class UserAdapter(private val userList: ArrayList<UserData>) : RecyclerView.Adap
         holder.itemView.setOnClickListener {
             onItemClickListener1?.onClick(position)
         }
+        holder.cardView.setCardBackgroundColor(holder.itemView.getResources().getColor(getRandomColor(),null))
+    }
+
+    private fun getRandomColor(): Int {
+        val colorCode: List<Int> = listOf(
+            R.color.pink,
+            R.color.blue,
+            R.color.green,
+            R.color.yellow,
+            R.color.purple,
+            R.color.brown,
+            R.color.gray,
+            R.color.orange)
+        val random = Random()
+        val number = random.nextInt(colorCode.size)
+        return colorCode[number]
     }
 }

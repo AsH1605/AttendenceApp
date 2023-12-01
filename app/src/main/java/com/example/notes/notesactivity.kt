@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notes.model.UserData
@@ -56,7 +57,7 @@ class notesactivity : AppCompatActivity() {
             override fun onClick(position: Int) {
                 val clickedItem = userList[position]
                 Log.d("Click Value", clickedItem.subName)
-                updateinfo(clickedItem.subName,clickedItem.classAttended,clickedItem.totalClasses)
+                updateinfo(clickedItem.subName, clickedItem.classAttended, clickedItem.totalClasses)
             }
         })
 
@@ -93,18 +94,23 @@ class notesactivity : AppCompatActivity() {
         addDialog.setPositiveButton("Ok") { dialog, _ ->
             val subNames = subName.text.toString()
             val tNames = teacherName.text.toString()
-            val documentReference = FirebaseFirestore.getInstance()
-                .collection("Subjects")
-                .document(firebaseUser.uid)
-                .collection("mySubjects")
-                .document()
+            if (subNames.trim().isEmpty()) {
+                Toast.makeText(this, "Subject name is Required", Toast.LENGTH_SHORT).show()
+            }else {
+                val documentReference = FirebaseFirestore.getInstance()
+                    .collection("Subjects")
+                    .document(firebaseUser.uid)
+                    .collection("mySubjects")
+                    .document()
 
-            val userdata = UserData(subNames, tNames)
+                val userdata = UserData(subNames, tNames)
 
-            documentReference.set(userdata).addOnSuccessListener {
-                Toast.makeText(this, "Subject Added Successful", Toast.LENGTH_SHORT).show()
+                documentReference.set(userdata).addOnSuccessListener {
+                    Toast.makeText(this, "Subject Added Successful", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
+
             }
-            dialog.dismiss()
         }
         addDialog.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
@@ -141,7 +147,7 @@ class notesactivity : AppCompatActivity() {
         }
     }
 
-    private fun updateinfo(sub: String,atten:Int, total: Int) {
+    private fun updateinfo(sub: String, atten: Int, total: Int) {
         val inflater = LayoutInflater.from(this)
         val v = inflater.inflate(R.layout.sub_update, null)
         val addDialog = AlertDialog.Builder(this)
@@ -149,50 +155,57 @@ class notesactivity : AppCompatActivity() {
         var daten = v.findViewById<TextView>(R.id.displayAttended)
         var dtotal = v.findViewById<TextView>(R.id.displayTotal)
 
-        daten?.text= atten.toString()
-        dtotal?.text= total.toString()
+        daten?.text = atten.toString()
+        dtotal?.text = total.toString()
 
-        val btnAddAtten=v.findViewById<Button>(R.id.btnAddAttended)
-        val btnSubAtten=v.findViewById<Button>(R.id.btnSubAttended)
-        val btnAddTotal=v.findViewById<Button>(R.id.btnAddTotal)
-        val btnSubTotal=v.findViewById<Button>(R.id.btnSubTotal)
+        val btnAddAtten = v.findViewById<Button>(R.id.btnAddAttended)
+        val btnSubAtten = v.findViewById<Button>(R.id.btnSubAttended)
+        val btnAddTotal = v.findViewById<Button>(R.id.btnAddTotal)
+        val btnSubTotal = v.findViewById<Button>(R.id.btnSubTotal)
 
-        var attenNoPosi=0
-        var totalNoPosi=0
-        var attenNoNeg=0
-        var totalNoNeg=0
+        var attenNoPosi = 0
+        var totalNoPosi = 0
+        var attenNoNeg = 0
+        var totalNoNeg = 0
 
         btnAddAtten.setOnClickListener {
             attenNoPosi++
-            daten?.text= (atten+attenNoPosi-attenNoNeg).toString()
+            daten?.text = (atten + attenNoPosi - attenNoNeg).toString()
         }
         btnSubAtten.setOnClickListener {
             attenNoNeg++
-            daten?.text= (atten+attenNoPosi-attenNoNeg).toString()
+            daten?.text = (atten + attenNoPosi - attenNoNeg).toString()
         }
         btnAddTotal.setOnClickListener {
             totalNoPosi++
-            dtotal?.text= (total+totalNoPosi-totalNoNeg).toString()
+            dtotal?.text = (total + totalNoPosi - totalNoNeg).toString()
         }
         btnSubTotal.setOnClickListener {
             totalNoNeg++
-            dtotal?.text= (total+totalNoPosi-totalNoNeg).toString()
+            dtotal?.text = (total + totalNoPosi - totalNoNeg).toString()
         }
         addDialog.setPositiveButton("Ok") { dialog, _ ->
             val documentReference = FirebaseFirestore.getInstance()
                 .collection("Subjects")
                 .document(firebaseUser.uid)
                 .collection("mySubjects")
-                .whereEqualTo("subName",sub)
-            documentReference.get().addOnSuccessListener { querySnapshot->
-                for(document in querySnapshot.documents){
-                    val updatedAtten=atten+attenNoPosi-attenNoNeg
-                    val updatedTotal=total+totalNoPosi-totalNoNeg
-                    document.reference.update("classAttended",updatedAtten)
-                    document.reference.update("totalClasses",updatedTotal)
+                .whereEqualTo("subName", sub)
+            documentReference.get().addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot.documents) {
+                    val updatedAtten = atten + attenNoPosi - attenNoNeg
+                    val updatedTotal = total + totalNoPosi - totalNoNeg
+                    document.reference.update("classAttended", updatedAtten)
+                    document.reference.update("totalClasses", updatedTotal)
                         .addOnSuccessListener {
-                            Toast.makeText(this, "Updated Successful", Toast.LENGTH_SHORT).show() }
-                        .addOnFailureListener { e -> Toast.makeText(this, "Error Updating", Toast.LENGTH_SHORT).show() }
+                            Toast.makeText(this, "Updated Successful", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(
+                                this,
+                                "Error Updating",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                 }
             }
             Toast.makeText(this, "Closing", Toast.LENGTH_SHORT).show()
@@ -207,17 +220,25 @@ class notesactivity : AppCompatActivity() {
                 .collection("Subjects")
                 .document(firebaseUser.uid)
                 .collection("mySubjects")
-                .whereEqualTo("subName",sub).get()
-                .addOnSuccessListener { querySnapshot->
-                    for(doc in querySnapshot.documents){
+                .whereEqualTo("subName", sub).get()
+                .addOnSuccessListener { querySnapshot ->
+                    for (doc in querySnapshot.documents) {
                         doc.reference.delete()
                     }
-                    Toast.makeText(this, "Subject Added Successful", Toast.LENGTH_SHORT).show() }
-                .addOnFailureListener { e -> Toast.makeText(this, "Error deleting Subject", Toast.LENGTH_SHORT).show() }
+                    Toast.makeText(this, "Subject Added Successful", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(
+                        this,
+                        "Error deleting Subject",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             dialog.dismiss()
         }
         addDialog.create()
         addDialog.show()
+
     }
 }
 

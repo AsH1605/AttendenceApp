@@ -11,16 +11,4 @@
     <color name="brown">#D58680</color>
     <color name="gray">#D6D4D4</color>
     <color name="orange">#FDB49D</color>
-    <array name="Item_colors">
-        <item>@color/pink</item>
-        <item>@color/blue</item>
-        <item>@color/green</item>
-        <item>@color/purple</item>
-        <item>@color/yellow</item>
-        <item>@color/brown</item>
-        <item>@color/gray</item>
-        <item>@color/orange</item>
-    </array>
-
-
 </resources>
