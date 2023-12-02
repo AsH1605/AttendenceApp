@@ -50,13 +50,11 @@ class notesactivity : AppCompatActivity() {
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         addsBtn.setOnClickListener {
             addInfo()
-            Log.d("TAG", "onCreate: ${userList.joinToString { it.toString().plus(", ") }}")
         }
         getData()
         userAdapter.setOnItemClickListener(object : UserAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
                 val clickedItem = userList[position]
-                Log.d("Click Value", clickedItem.subName)
                 updateinfo(clickedItem.subName, clickedItem.classAttended, clickedItem.totalClasses)
             }
         })
@@ -77,6 +75,17 @@ class notesactivity : AppCompatActivity() {
                 finish()
                 startActivity(Intent(this, MainActivity::class.java))
                 true
+            }
+            R.id.delete->{
+                firebaseUser.delete()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Deleted Account", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Could not Delete Account", Toast.LENGTH_SHORT).show()
+                    }
             }
 
             else -> false
@@ -129,14 +138,12 @@ class notesactivity : AppCompatActivity() {
             .collection("mySubjects")
         documentReference.addSnapshotListener { snapshot, error ->
             if (error != null) {
-                Log.e("TAG", "Error fetching data", error)
                 Toast.makeText(this, "Error fetching Data", Toast.LENGTH_SHORT).show()
             }
             userList.clear()
             if (snapshot != null) {
                 for (document in snapshot.documents) {
                     val sub = document?.toObject(UserData::class.java)
-                    Log.d("TAG", "getData: $document")
                     if (sub != null) {
                         userList.add(sub)
                     }
@@ -171,6 +178,7 @@ class notesactivity : AppCompatActivity() {
         btnAddAtten.setOnClickListener {
             attenNoPosi++
             daten?.text = (atten + attenNoPosi - attenNoNeg).toString()
+            dtotal?.text = (total + totalNoPosi - totalNoNeg+attenNoPosi - attenNoNeg).toString()
         }
         btnSubAtten.setOnClickListener {
             attenNoNeg++
@@ -178,11 +186,11 @@ class notesactivity : AppCompatActivity() {
         }
         btnAddTotal.setOnClickListener {
             totalNoPosi++
-            dtotal?.text = (total + totalNoPosi - totalNoNeg).toString()
+            dtotal?.text = (total + totalNoPosi - totalNoNeg+attenNoPosi).toString()
         }
         btnSubTotal.setOnClickListener {
             totalNoNeg++
-            dtotal?.text = (total + totalNoPosi - totalNoNeg).toString()
+            dtotal?.text = (total + totalNoPosi - totalNoNeg+attenNoPosi).toString()
         }
         addDialog.setPositiveButton("Ok") { dialog, _ ->
             val documentReference = FirebaseFirestore.getInstance()
@@ -193,7 +201,7 @@ class notesactivity : AppCompatActivity() {
             documentReference.get().addOnSuccessListener { querySnapshot ->
                 for (document in querySnapshot.documents) {
                     val updatedAtten = atten + attenNoPosi - attenNoNeg
-                    val updatedTotal = total + totalNoPosi - totalNoNeg
+                    val updatedTotal = total + totalNoPosi - totalNoNeg+ attenNoPosi
                     document.reference.update("classAttended", updatedAtten)
                     document.reference.update("totalClasses", updatedTotal)
                         .addOnSuccessListener {
@@ -208,7 +216,6 @@ class notesactivity : AppCompatActivity() {
                         }
                 }
             }
-            Toast.makeText(this, "Closing", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }
         addDialog.setNegativeButton("Cancel") { dialog, _ ->

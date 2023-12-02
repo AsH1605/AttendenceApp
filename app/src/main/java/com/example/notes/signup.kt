@@ -52,7 +52,8 @@ class signup : AppCompatActivity() {
                         sendEmailVerification()
                     }
                     else{
-                        Toast.makeText(this,"Failed to register",Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(this,"Failed to register",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Failed to register", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

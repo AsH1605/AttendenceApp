@@ -25,6 +25,7 @@ class forgotpassword : AppCompatActivity() {
         mforgotpassword=findViewById(R.id.forgotpassword)
         mpasswordrecoverbutton=findViewById(R.id.passwordrecoverbutton)
         mgobacktologin=findViewById(R.id.gobacktologin)
+        firebaseAuth=FirebaseAuth.getInstance()
 
         mgobacktologin.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -39,10 +40,14 @@ class forgotpassword : AppCompatActivity() {
             else{
                 //send password recover email
                 firebaseAuth.sendPasswordResetEmail(mail).addOnCompleteListener {task->
-                    Toast.makeText(this,"Mail sent you can recover your password using mail",Toast.LENGTH_SHORT).show()
-                    finish()
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "Mail sent. You can recover your password using email.", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Failed to send reset email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

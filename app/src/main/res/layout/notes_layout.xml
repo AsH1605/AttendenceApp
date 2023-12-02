@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
+            android:layout_margin="5dp"
             android:layout_weight="1"
             android:orientation="vertical"
             android:padding="10dp">
@@ -29,7 +29,7 @@
                 android:id="@+id/mtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:text="Subject"
                 android:textColor="@color/black"
                 android:textSize="19sp"
@@ -39,7 +39,7 @@
                 android:id="@+id/mSubtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="6dp"
+                android:layout_margin="5dp"
                 android:text="Subject teacher"
                 android:textColor="#5C5C5C"
                 android:textSize="15sp"
@@ -49,7 +49,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_margin="15dp">
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="4dp">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -63,21 +66,21 @@
                         android:textAlignment="center"
                         android:id="@+id/attended"
                         android:text="Attended"
-                        android:textSize="19sp"
+                        android:textSize="25sp"
                         android:layout_margin="10dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAlignment="center"
-                        android:text="Attended\nClasses"
+                        android:text="Attended Classes"
                         android:textSize="9sp" />
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="/"
-                    android:textSize="30sp"
+                    android:textSize="40sp"
                     android:layout_margin="10dp" />
                 <LinearLayout
                     android:layout_width="0dp"
@@ -92,13 +95,13 @@
                         android:id="@+id/total"
                         android:text="Total"
                         android:layout_margin="10dp"
-                        android:textSize="19sp" />
+                        android:textSize="25sp" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAlignment="center"
-                        android:text="Total\nClasses"
+                        android:text="Total Classes"
                         android:textSize="9sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -107,7 +110,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
+            android:layout_margin="5dp"
             android:orientation="vertical">
 
             <ImageView
@@ -123,9 +126,9 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/percentage"
                 android:text="%"
-                android:textSize="30sp"
+                android:textSize="40sp"
                 android:layout_gravity="center"
-                android:layout_marginTop="30dp"/>
+                android:layout_marginTop="10dp"/>
         </LinearLayout>
 
     </LinearLayout>

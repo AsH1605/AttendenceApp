@@ -47,11 +47,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         mgotosignup.setOnClickListener {
+            finish()
             val intent = Intent(this, signup::class.java)
             startActivity(intent)
         }
 
         mgotoforgotpassword.setOnClickListener {
+            finish()
             val intent = Intent(this, forgotpassword::class.java)
             startActivity(intent)
         }
@@ -65,22 +67,29 @@ class MainActivity : AppCompatActivity() {
             else{
                 //login the user
                 firebaseAuth.signInWithEmailAndPassword(mail,password).addOnCompleteListener { task->
-                    checkmailverification()
+                    checkmailverification(mail,password)
                 }
             }
         }
     }
 
-    private fun checkmailverification() {
-        val firebaseUser: FirebaseUser? = firebaseAuth.currentUser
-        if(firebaseUser?.isEmailVerified()==true){
-            Toast.makeText(this,"Logged In",Toast.LENGTH_SHORT).show()
-            finish()
-            startActivity(Intent(this, notesactivity::class.java))
-        }
-        else{
-            Toast.makeText(this,"Verify your mail first",Toast.LENGTH_SHORT).show()
-            firebaseAuth.signOut()
-        }
+    private fun checkmailverification(email: String, password: String) {
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val firebaseUser: FirebaseUser? = firebaseAuth.currentUser
+                    if (firebaseUser?.isEmailVerified == true) {
+                        Toast.makeText(this, "Logged In", Toast.LENGTH_SHORT).show()
+                        finish()
+                        startActivity(Intent(this, notesactivity::class.java))
+                    } else {
+                        Toast.makeText(this, "Verify your mail first", Toast.LENGTH_SHORT).show()
+                        firebaseAuth.signOut()
+                    }
+                } else {
+                    // Handle the case where the login fails
+                    Toast.makeText(this, "Login failed. Check your email and password.", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 }
