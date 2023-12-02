@@ -33,6 +33,7 @@ class signup : AppCompatActivity() {
         mgotologin.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         msignup.setOnClickListener {
@@ -58,6 +59,13 @@ class signup : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     //send email verification

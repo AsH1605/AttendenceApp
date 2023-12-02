@@ -77,15 +77,29 @@ class notesactivity : AppCompatActivity() {
                 true
             }
             R.id.delete->{
-                firebaseUser.delete()
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Deleted Account", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, MainActivity::class.java))
-                        finish()
+                val inflater = LayoutInflater.from(this)
+                val v = inflater.inflate(R.layout.delete_account, null)
+                val addDialog = AlertDialog.Builder(this)
+                addDialog.setView(v)
+
+                addDialog.setPositiveButton("Ok") { dialog, _ ->
+                    firebaseUser.delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Deleted Account", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, MainActivity::class.java))
+                            finish()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Could not Delete Account", Toast.LENGTH_SHORT).show()
+                        }
+                        dialog.dismiss()
                     }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Could not Delete Account", Toast.LENGTH_SHORT).show()
-                    }
+                addDialog.setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                    Toast.makeText(this, "Cancel", Toast.LENGTH_SHORT).show()
+                }
+                addDialog.create()
+                addDialog.show()
             }
 
             else -> false
@@ -232,12 +246,12 @@ class notesactivity : AppCompatActivity() {
                     for (doc in querySnapshot.documents) {
                         doc.reference.delete()
                     }
-                    Toast.makeText(this, "Subject Added Successful", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Subject Deleted Successful", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(
                         this,
-                        "Error deleting Subject",
+                        "Error Deleting Subject",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -245,7 +259,6 @@ class notesactivity : AppCompatActivity() {
         }
         addDialog.create()
         addDialog.show()
-
     }
 }
 
