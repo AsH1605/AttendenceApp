@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/background"
     android:layout_height="match_parent"
     tools:context=".signup">
 
@@ -27,12 +28,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="42sp"
+            android:textColor="@color/lightGrey"
             android:text="New User"
             android:textStyle="bold"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/lightGrey"
             android:text="NIce to see you here"
             android:textSize="23sp"
             android:textStyle="bold"/>
@@ -50,6 +53,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/lightGrey"
             android:id="@+id/signupemail"
             android:hint="Enter your email"
             android:inputType="textEmailAddress"/>
@@ -69,6 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/signuppassword"
+            android:textColor="@color/lightGrey"
             android:hint="Enter your password"
             android:inputType="textPassword"/>
     </com.google.android.material.textfield.TextInputLayout>
@@ -102,6 +107,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_below="@+id/signup"
+        android:textColor="@color/lightGrey"
         android:id="@+id/gotologin"
         android:layout_marginTop="70dp"/>
 

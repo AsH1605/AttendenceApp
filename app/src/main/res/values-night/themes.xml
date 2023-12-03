@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/my_primary</item>
         <item name="colorPrimaryVariant">@color/my_primary</item>
         <item name="android:statusBarColor">@color/my_primary</item>
+        <item name="android:fontFamily">@font/dancing_script</item>
     </style>
 
     <style name="Theme.Notes" parent="Base.Theme.Notes" />

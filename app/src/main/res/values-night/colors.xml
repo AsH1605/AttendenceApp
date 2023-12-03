@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="my_primary">#221D2B</color>
-    <color name="black">#FF000000</color>
+    <color name="black">#FFFFFFFF</color>
+    <color name="lightGrey">#9A9898</color>
+    <color name="background">#403F3F</color>
     <color name="white">#FFFFFFFF</color>
     <color name="pink">#FCB0CA</color>
     <color name="blue">#CBD1F6</color>

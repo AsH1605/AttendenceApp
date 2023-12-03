@@ -118,7 +118,7 @@ class notesactivity : AppCompatActivity() {
         addDialog.setPositiveButton("Ok") { dialog, _ ->
             val subNames = subName.text.toString()
             val tNames = teacherName.text.toString()
-            if (subNames.trim().isEmpty()) {
+            if (subNames.isNullOrBlank()) {
                 Toast.makeText(this, "Subject name is Required", Toast.LENGTH_SHORT).show()
             }else {
                 val documentReference = FirebaseFirestore.getInstance()
@@ -133,7 +133,6 @@ class notesactivity : AppCompatActivity() {
                     Toast.makeText(this, "Subject Added Successfully", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 }
-
             }
         }
         addDialog.setNegativeButton("Cancel") { dialog, _ ->
@@ -213,21 +212,28 @@ class notesactivity : AppCompatActivity() {
                 .document(firebaseUser.uid)
                 .collection("mySubjects")
                 .whereEqualTo("subName", sub)
-            documentReference.get().addOnSuccessListener { querySnapshot ->
-                for (document in querySnapshot.documents) {
-                    val updatedAtten = atten + attenNoPosi - attenNoNeg
-                    val updatedTotal = total + totalNoPosi - totalNoNeg+ attenNoPosi
-                    document.reference.update("classAttended", updatedAtten)
-                    document.reference.update("totalClasses", updatedTotal)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener { e ->
-                            Toast.makeText(this, "Error Updating", Toast.LENGTH_SHORT).show()
-                        }
+            val updatedAtten = atten + attenNoPosi - attenNoNeg
+            val updatedTotal = total + totalNoPosi - totalNoNeg + attenNoPosi
+            if(updatedTotal>=updatedAtten) {
+                documentReference.get().addOnSuccessListener { querySnapshot ->
+                    for (document in querySnapshot.documents) {
+
+                        document.reference.update("classAttended", updatedAtten)
+                        document.reference.update("totalClasses", updatedTotal)
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(this, "Error Updating", Toast.LENGTH_SHORT).show()
+                            }
+                    }
                 }
+                dialog.dismiss()
+            }else {
+                Toast.makeText(this, "Total Classes Cannot be Less than Attended Classes", Toast.LENGTH_SHORT)
+                    .show()
             }
-            dialog.dismiss()
         }
         addDialog.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()

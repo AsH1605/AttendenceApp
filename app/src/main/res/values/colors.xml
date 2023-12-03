@@ -3,11 +3,13 @@
     <color name="my_primary">#221D2B</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="background">#FFFFFFFF</color>
     <color name="pink">#FCB0CA</color>
     <color name="blue">#CBD1F6</color>
     <color name="green">#C1FFC3</color>
     <color name="purple">#F2BDFB</color>
     <color name="yellow">#FAF4C2</color>
+    <color name="lightGrey">#7C7979</color>
     <color name="brown">#FBC1BD</color>
     <color name="gray">#D6D4D4</color>
     <color name="orange">#FDCFC0</color>
