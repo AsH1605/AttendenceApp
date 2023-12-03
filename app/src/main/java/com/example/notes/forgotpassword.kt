@@ -29,6 +29,7 @@ class forgotpassword : AppCompatActivity() {
 
         mgobacktologin.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
+            finish()
             startActivity(intent)
         }
 
@@ -43,8 +44,8 @@ class forgotpassword : AppCompatActivity() {
                     if (task.isSuccessful) {
                         Toast.makeText(this, "Mail sent. You can recover your password using email.", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
                         finish()
+                        startActivity(intent)
                     } else {
                         Toast.makeText(this, "Failed to send reset email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
@@ -56,7 +57,7 @@ class forgotpassword : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
         finish()
+        startActivity(intent)
     }
 }

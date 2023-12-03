@@ -10,6 +10,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -58,7 +60,6 @@ class notesactivity : AppCompatActivity() {
                 updateinfo(clickedItem.subName, clickedItem.classAttended, clickedItem.totalClasses)
             }
         })
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -86,8 +87,8 @@ class notesactivity : AppCompatActivity() {
                     firebaseUser.delete()
                         .addOnSuccessListener {
                             Toast.makeText(this, "Deleted Account", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this, MainActivity::class.java))
                             finish()
+                            startActivity(Intent(this, MainActivity::class.java))
                         }
                         .addOnFailureListener {
                             Toast.makeText(this, "Could not Delete Account", Toast.LENGTH_SHORT).show()
@@ -129,7 +130,7 @@ class notesactivity : AppCompatActivity() {
                 val userdata = UserData(subNames, tNames)
 
                 documentReference.set(userdata).addOnSuccessListener {
-                    Toast.makeText(this, "Subject Added Successful", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Subject Added Successfully", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 }
 
@@ -192,7 +193,7 @@ class notesactivity : AppCompatActivity() {
         btnAddAtten.setOnClickListener {
             attenNoPosi++
             daten?.text = (atten + attenNoPosi - attenNoNeg).toString()
-            dtotal?.text = (total + totalNoPosi - totalNoNeg+attenNoPosi - attenNoNeg).toString()
+            dtotal?.text = (total + totalNoPosi - totalNoNeg+attenNoPosi ).toString()
         }
         btnSubAtten.setOnClickListener {
             attenNoNeg++
@@ -219,14 +220,10 @@ class notesactivity : AppCompatActivity() {
                     document.reference.update("classAttended", updatedAtten)
                     document.reference.update("totalClasses", updatedTotal)
                         .addOnSuccessListener {
-                            Toast.makeText(this, "Updated Successful", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show()
                         }
                         .addOnFailureListener { e ->
-                            Toast.makeText(
-                                this,
-                                "Error Updating",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this, "Error Updating", Toast.LENGTH_SHORT).show()
                         }
                 }
             }
@@ -235,27 +232,6 @@ class notesactivity : AppCompatActivity() {
         addDialog.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
             Toast.makeText(this, "Cancel", Toast.LENGTH_SHORT).show()
-        }
-        addDialog.setNeutralButton("Delete Subject") { dialog, _ ->
-            FirebaseFirestore.getInstance()
-                .collection("Subjects")
-                .document(firebaseUser.uid)
-                .collection("mySubjects")
-                .whereEqualTo("subName", sub).get()
-                .addOnSuccessListener { querySnapshot ->
-                    for (doc in querySnapshot.documents) {
-                        doc.reference.delete()
-                    }
-                    Toast.makeText(this, "Subject Deleted Successful", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(
-                        this,
-                        "Error Deleting Subject",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            dialog.dismiss()
         }
         addDialog.create()
         addDialog.show()

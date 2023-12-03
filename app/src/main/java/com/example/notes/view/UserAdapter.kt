@@ -1,13 +1,20 @@
 package com.example.notes.view
 
+import android.content.Context
 import android.view.LayoutInflater
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notes.R
 import com.example.notes.model.UserData
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Random
 
 class UserAdapter(private val userList: ArrayList<UserData>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
@@ -21,6 +28,50 @@ class UserAdapter(private val userList: ArrayList<UserData>) : RecyclerView.Adap
         val totalClasses = itemView.findViewById<TextView>(R.id.total)
         val percent=itemView.findViewById<TextView>(R.id.percentage)
         val cardView: CardView = itemView.findViewById(R.id.cardView)
+        val moreOp=itemView.findViewById<ImageView>(R.id.more_op)
+        init{
+            moreOp.setOnClickListener {
+                showPopup(it,userList[absoluteAdapterPosition])
+            }
+        }
+    }
+
+    private fun showPopup(view: View, userData: UserData) {
+        val popupMenu = PopupMenu(view.context, view)
+        val inflater: MenuInflater = popupMenu.menuInflater
+        inflater.inflate(R.menu.popup_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.deleteSubject -> {
+                    deleteSubject(view.context,userData)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popupMenu.show()
+    }
+
+    private fun deleteSubject(context: Context, subject: UserData) {
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+
+        FirebaseFirestore.getInstance()
+            .collection("Subjects")
+            .document(firebaseUser?.uid ?: "")
+            .collection("mySubjects")
+            .whereEqualTo("subName", subject.subName)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                for (doc in querySnapshot.documents) {
+                    doc.reference.delete()
+                }
+                Toast.makeText(context, "Subject Deleted Successfully", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Error Deleting Subject", Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
