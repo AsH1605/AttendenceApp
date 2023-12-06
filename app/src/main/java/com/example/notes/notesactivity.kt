@@ -41,7 +41,7 @@ class notesactivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notesactivity)
 
-        supportActionBar?.title = "All Subjects"
+        supportActionBar?.title = "Subject Attendance Tracker"
         addsBtn = findViewById(R.id.createnotefab)
         recv = findViewById(R.id.recyclerview)
         userAdapter = UserAdapter(userList)
@@ -152,7 +152,7 @@ class notesactivity : AppCompatActivity() {
             .collection("mySubjects")
         documentReference.addSnapshotListener { snapshot, error ->
             if (error != null) {
-                Toast.makeText(this, "Error fetching Data", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error Fetching Data", Toast.LENGTH_SHORT).show()
             }
             userList.clear()
             if (snapshot != null) {
