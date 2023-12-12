@@ -3,6 +3,7 @@ package com.example.notes
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -40,19 +41,19 @@ class forgotpassword : AppCompatActivity() {
             }
             else{
                 //send password recover email
-                firebaseAuth.sendPasswordResetEmail(mail).addOnCompleteListener {task->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Mail sent. You can recover your password using email.", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this, MainActivity::class.java)
-                        finish()
-                        startActivity(intent)
-                    } else {
-                        Toast.makeText(this, "Failed to send reset email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                firebaseAuth.sendPasswordResetEmail(mail).addOnSuccessListener {task->
+                    Toast.makeText(this, "You can recover your password using email if registered.", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, MainActivity::class.java)
+                    finish()
+                    startActivity(intent)
+                    }
+                    .addOnFailureListener{
+                        Toast.makeText(this, "Failed to send reset email", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
-    }
+
 
     override fun onBackPressed() {
         super.onBackPressed()

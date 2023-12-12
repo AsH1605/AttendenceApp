@@ -17,6 +17,10 @@ import com.example.notes.view.UserAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,9 +69,20 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this,"All fields are required",Toast.LENGTH_SHORT).show()
             }
             else{
-                //login the user
-                firebaseAuth.signInWithEmailAndPassword(mail,password).addOnCompleteListener { task->
-                    checkmailverification(mail,password)
+                CoroutineScope(Dispatchers.IO).launch {
+                    //login the user
+                    try {
+                        firebaseAuth.signInWithEmailAndPassword(mail, password)
+                        .addOnCompleteListener { task ->
+                        checkmailverification(mail, password)
+                        }
+                    }catch (e:Exception){
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Login failed. Check your email and password.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
         }
