@@ -80,7 +80,7 @@ class notesactivity : AppCompatActivity() {
             R.id.delete->{
                 val inflater = LayoutInflater.from(this)
                 val v = inflater.inflate(R.layout.delete_account, null).apply {
-                    setPadding(50,50,50,20)
+                    setPaddingRelative(50, 50, 50, 20)
                 }
                 val addDialog = AlertDialog.Builder(this)
                 addDialog.setView(v)
